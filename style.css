@@ -1,0 +1,38 @@
+#sim {
+    background-color: black;
+    display: grid;
+    grid-template-columns: repeat(120, fit-content(200px));
+
+    gap: 0px;
+    padding: 0px;
+}
+
+#simContainer {
+    display: inline-block;
+}
+
+.grid-item {
+    background-color: green;
+    width: 5px;
+    height: 5px;
+}
+
+  div.sheepObj {
+    border: 1px solid black;
+    background-color: white;
+    border-radius: 50%;
+    width: 7px; 
+    height: 7px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;    
+  }
+
+  div.wolfObj {
+    border: 1px solid rgb(121, 83, 83);
+    background-color: rgb(77, 85, 85);
+    border-radius: 50%;
+    width: 14px; 
+    height: 14px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;    
+  }
