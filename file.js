@@ -1,6 +1,6 @@
 class Grass {
     constructor() {
-        this.energygiven = 3;
+        this.energygiven = parseInt(document.getElementById("InputGrassEnergy").value);
         this.eaten = false;
         this.coords = ['x','y'];
       }
@@ -14,16 +14,16 @@ class Grass {
         gp = parseInt(gp)
         let ChanceOfRegrow = 0;
         if (gp !== 0 && GrassGrid[gr][gp-1].eaten === false) {
-            ChanceOfRegrow += 0.005;
+            ChanceOfRegrow += parseInt(document.getElementById("InputGrassRegrow").value)/400;
         }
         if (gp !== 119 && GrassGrid[gr][gp+1].eaten === false) {
-            ChanceOfRegrow += 0.005;
+            ChanceOfRegrow += parseInt(document.getElementById("InputGrassRegrow").value)/400;
         }
         if (gr !== 0 && GrassGrid[gr-1][gp].eaten === false) {
-            ChanceOfRegrow += 0.005;
+            ChanceOfRegrow += parseInt(document.getElementById("InputGrassRegrow").value)/400;
         }
         if (gr !== 119 && GrassGrid[gr+1][gp].eaten === false) {
-            ChanceOfRegrow += 0.005;
+            ChanceOfRegrow += parseInt(document.getElementById("InputGrassRegrow").value)/400;
         }
         if (Math.random() <= ChanceOfRegrow) {
             this.eaten = false;
@@ -45,7 +45,7 @@ class Sheep {
         this.energygiven = this.energy;
         this.age = 0;
         this.fighter = false;
-        if (Math.random() < 0.03) {
+        if (Math.random() < parseInt(document.getElementById("InputFightPerc").value)/100) {
             this.fighter = true;
         }
         this.colour = ['white','gray','tan','lightpink','black'][randomint(0, 4)];
@@ -120,6 +120,11 @@ class Sheep {
                 sheep.x = this.x;
                 sheep.y = this.y;
                 sheep.colour = this.colour;
+                if (this.fighter === true) {
+                    if (Math.random() < 0.18) {
+                        sheep.fighter = true;
+                    }
+                }
                 SheepArray.push(sheep);
                 SheepIdArray.push(sheep.id);
             }
@@ -223,14 +228,8 @@ function CheckForGrass(hsheep) {
         for (let gp in GrassGrid[gr]) {
             if (GrassGrid[gr][gp].eaten === false && setvaluex <= GrassGrid[gr][gp].coords[0]+5 && setvaluex >= GrassGrid[gr][gp].coords[0] && setvaluey <= GrassGrid[gr][gp].coords[1]+5 && setvaluey >= GrassGrid[gr][gp].coords[1]) {
                 GrassGrid[gr][gp].eaten = true;
-                if (hsheep.colour === "lightpink") {
-                    hsheep.energy += 3.3;
-                    hsheep.energygiven += 3.3;
-                }
-                else {
-                    hsheep.energy += GrassGrid[gr][gp].energygiven;
-                    hsheep.energygiven += GrassGrid[gr][gp].energygiven;
-                }
+                hsheep.energy += GrassGrid[gr][gp].energygiven;
+                hsheep.energygiven += GrassGrid[gr][gp].energygiven;
                 GrassGrid[gr][gp].UpdateEaten(gr, gp)
             }
         }
@@ -246,7 +245,7 @@ function CheckForSheep(hwolf) {
     for (let sheep in SheepArray) {
         sheep = SheepArray[sheep];
         if (hwolf.x <= sheep.x+7.5 && hwolf.x >= sheep.x && hwolf.y <= sheep.y+7.5 && hwolf.y >= sheep.y) {
-            if (sheep.fighter === false || (sheep.fighter === true && Math.random < 0.12)) {
+            if (sheep.fighter === false || ((sheep.fighter === true && Math.random < 0.12) || (sheep.fighter === true && sheep.energy < 15))) {
                 removeElement(sheep.id);  
                 var index = SheepIdArray.indexOf(sheep.id);
                 if (index > -1) {
@@ -282,15 +281,25 @@ SheepCreated = 0;
 WolfArray = new Array();
 WolfIdArray = new Array();
 WolfCreated = 0;
+let stop = false;
 SheepColours = ['white','gray','tan','lightpink','black']
 let GrassGrid = new Array(GrassAreaSize);
 GrassElements = new Array(GrassAreaSize);
+document.getElementById('SimSpeed').value = '100';
+document.getElementById("InputSheepNum").value = '10';
+document.getElementById("InputWolfNum").value = '2';
+document.getElementById("InputFightPerc").value = '3.4';
+document.getElementById("InputGrassEnergy").value = '3';
+document.getElementById("InputGrassRegrow").value = '2';
 let containerDiv = document.getElementById("sim");
-for (let s=0; s < 10; s++) {
-    sheep = new Sheep();
-    SheepArray.push(sheep);
-    SheepIdArray.push(sheep.id);
-    sheep.Update();
+for (c=0; c < 2; c++) {
+    for (let s=0; s < SheepColours.length; s++) {
+        sheep = new Sheep();
+        sheep.colour = SheepColours[s]
+        SheepArray.push(sheep);
+        SheepIdArray.push(sheep.id);
+        sheep.Update();
+    }
 }
 for (let w=0; w < 2; w++) {
     wolf = new Wolf();
@@ -315,23 +324,65 @@ function GenSim() {
     }
 }
 
+function ResetSim() {
+    stop = true;
+    SheepArray = new Array();
+    SheepIdArray = new Array();
+    SheepCreated = 0;
+    WolfArray = new Array();
+    WolfIdArray = new Array();
+    WolfCreated = 0;
+    SheepColours = ['white','gray','tan','lightpink','black']
+    GrassGrid = new Array(GrassAreaSize);
+    GrassElements = new Array(GrassAreaSize);
+    containerDiv = document.getElementById("sim");
+    while (document.getElementById("SheepContainer").hasChildNodes()) {
+        document.getElementById("SheepContainer").removeChild(document.getElementById("SheepContainer").firstChild);
+    }
+    while (document.getElementById("WolfContainer").hasChildNodes()) {
+        document.getElementById("WolfContainer").removeChild(document.getElementById("WolfContainer").firstChild);
+    }
+    for (let s=0; s < parseInt(document.getElementById("InputSheepNum").value); s++) {
+        sc = s;
+        while (sc > SheepColours.length-1) {
+            sc -= SheepColours.length;
+        }
+        sheep = new Sheep();
+        sheep.colour = SheepColours[sc]
+        SheepArray.push(sheep);
+        SheepIdArray.push(sheep.id);
+        sheep.Update();
+    }
+    for (let w=0; w < parseInt(document.getElementById("InputWolfNum").value); w++) {
+        wolf = new Wolf();
+        WolfArray.push(wolf);
+        WolfIdArray.push(wolf.id);
+        wolf.Update();
+    }
+    while (containerDiv.hasChildNodes()) {
+        containerDiv.removeChild(containerDiv.firstChild);
+    }
+    GenSim();
+    stop = false;
+}
 GenSim();
 
-var MoveSheep = setInterval(function() {
-    for (let sheep in SheepArray) {
-        SheepArray[sheep].Update();
-    }
-    for (let wolf in WolfArray) {
-        WolfArray[wolf].Update();
-    }
-    for (let gr in GrassGrid) {
-        for (let gp in GrassGrid[gr]) {
-            if (GrassGrid[gr][gp].eaten === true) {
-                GrassGrid[gr][gp].UpdateGrow(gr, gp);
+function UpdateSim() {
+    if (stop === false) {
+        for (let sheep in SheepArray) {
+            SheepArray[sheep].Update();
+        }
+        for (let wolf in WolfArray) {
+            WolfArray[wolf].Update();
+        }
+        for (let gr in GrassGrid) {
+            for (let gp in GrassGrid[gr]) {
+                if (GrassGrid[gr][gp].eaten === true) {
+                    GrassGrid[gr][gp].UpdateGrow(gr, gp);
+                }
             }
         }
+        setTimeout(UpdateSim, 200-parseInt(document.getElementById("SimSpeed").value));
     }
-}, 100);
-
-//23 every 36h -> 0.639 dollars an hour -> My plots is 51.11 dollars an hour
-//250 every 92h -> 2.717 dollars an hour -> My plots is 217.39 dollars an hour
+}
+setTimeout(UpdateSim, 200-parseInt(document.getElementById("SimSpeed").value));

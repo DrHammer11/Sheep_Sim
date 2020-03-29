@@ -16,6 +16,13 @@
     </div>  
     <div id="WolfContainer">
     </div> 
+    <div>Initial sheep population:<textarea class="input" cols="10" rows="1" value="10" id="InputSheepNum"></textarea></div>
+    <div>Initial wolf population:<textarea class="input" cols="10" rows="1" value="2" id="InputWolfNum"></textarea></div>
+    <div>Chance that sheep will fight back (%):<textarea class="input" cols="10" rows="1" value="2" id="InputFightPerc"></textarea></div>
+    <div>Energy given from eating grass:<textarea class="input" cols="10" rows="1" value="2" id="InputGrassEnergy"></textarea></div>
+    <div>Chance grass will regrow each tick if it <br> is surrounded by grass (%):<textarea class="input" cols="10" rows="1" value="2" id="InputGrassRegrow"></textarea></div>
+    <div>Simulation speed:<textarea class="input" cols="10" rows="1" value="100" id="SimSpeed"></textarea></div>
+    <button id="reset-button" onclick="ResetSim()">Reset</button>
     <script src="file.js"></script>
 </body>
 </html>
