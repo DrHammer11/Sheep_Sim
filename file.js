@@ -114,8 +114,8 @@ class Sheep {
             SheepArray.push(sheep);
             SheepIdArray.push(sheep.id);
             if (this.colour === "white") {
-                this.energy -= 3;
-                this.energygiven -= 3;
+                this.energy -= 5;
+                this.energygiven -= 5;
                 sheep = new Sheep();
                 sheep.x = this.x;
                 sheep.y = this.y;
@@ -228,6 +228,9 @@ function CheckForGrass(hsheep) {
         for (let gp in GrassGrid[gr]) {
             if (GrassGrid[gr][gp].eaten === false && setvaluex <= GrassGrid[gr][gp].coords[0]+5 && setvaluex >= GrassGrid[gr][gp].coords[0] && setvaluey <= GrassGrid[gr][gp].coords[1]+5 && setvaluey >= GrassGrid[gr][gp].coords[1]) {
                 GrassGrid[gr][gp].eaten = true;
+                if (hsheep.colour === "pink") {
+                    hsheep.energy += 0.1 * GrassGrid[gr][gp].energygiven;
+                }
                 hsheep.energy += GrassGrid[gr][gp].energygiven;
                 hsheep.energygiven += GrassGrid[gr][gp].energygiven;
                 GrassGrid[gr][gp].UpdateEaten(gr, gp)
@@ -382,6 +385,20 @@ function UpdateSim() {
                 }
             }
         }
+        let totalspp = '';
+        for (let scs in SheepColours) {
+            scs = SheepColours[scs];
+            let counter = 0;
+            for (let sheep in SheepArray) {
+                sheep = SheepArray[sheep];
+                if (sheep.colour === scs) {
+                    counter += 1;
+                }
+            }
+            totalspp += (scs + " sheep population: "+counter.toString()+"<br>");
+        }
+        document.getElementById("sheepPop").innerHTML = totalspp;
+        document.getElementById("wolfPop").innerHTML = "Wolf population: "+WolfArray.length.toString();
         setTimeout(UpdateSim, 200-parseInt(document.getElementById("SimSpeed").value));
     }
 }
