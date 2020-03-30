@@ -33,7 +33,7 @@ class Grass {
 }
 class Sheep {
     constructor() {
-        this.x = 5*randomint(1, GrassAreaSize)+428;
+        this.x = 5*randomint(1, GrassAreaSize)+350;
         this.y = 5*randomint(1, GrassAreaSize)+4;
         this.id = "Sheep"+SheepCreated;
         this.element = document.createElement('div');
@@ -82,14 +82,14 @@ class Sheep {
         else {
             this.y -= randomint(2, 5);
         }
-        if (this.x > 5*GrassAreaSize+423) {
-            this.x = 5*GrassAreaSize+423;
+        if (this.x > 5*GrassAreaSize+350) {
+            this.x = 5*GrassAreaSize+350;
         }
         if (this.y > 5*GrassAreaSize+4) {
             this.y = 5*GrassAreaSize-1;
         }
-        if (this.x < 428) {
-            this.x = 428;
+        if (this.x < 350) {
+            this.x = 350;
         }
         if (this.y < 4) {
             this.y = 4;
@@ -149,7 +149,7 @@ class Sheep {
 }
 class Wolf {
     constructor() {
-        this.x = 5*randomint(1, GrassAreaSize)+428;
+        this.x = 5*randomint(1, GrassAreaSize)+350;
         this.y = 5*randomint(1, GrassAreaSize)+4;
         this.id = "Wolf"+WolfCreated;
         this.element = document.createElement('div');
@@ -318,7 +318,7 @@ function GenSim() {
         for (let j = 0; j < GrassGrid[i].length; j++) {
             let newgrass = new Grass();
             GrassGrid[i][j] = newgrass;
-            GrassGrid[i][j].coords = [5*(j+1)+428, 5*(i+1)+4];
+            GrassGrid[i][j].coords = [5*(j+1)+350, 5*(i+1)+4];
             let columnElement = document.createElement('div');
             columnElement.className = "grid-item";
             containerDiv.appendChild(columnElement);
