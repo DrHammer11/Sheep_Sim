@@ -16,14 +16,21 @@
     </div>  
     <div id="WolfContainer">
     </div> 
+    <canvas id="myCanvas" width="300" height="200" style="border:1px solid #d3d3d3; left: 8px"></canvas>
+    <canvas id="myCanvas2" width="300" height="200" style="border:1px solid #d3d3d3; position: absolute; left: 8px"></canvas>
     <div>Initial sheep population:<textarea class="input" cols="10" rows="1" value="10" id="InputSheepNum"></textarea></div>
     <div>Initial wolf population:<textarea class="input" cols="10" rows="1" value="2" id="InputWolfNum"></textarea></div>
     <div>Chance that sheep will fight back (%):<textarea class="input" cols="10" rows="1" value="2" id="InputFightPerc"></textarea></div>
     <div>Energy given from eating grass:<textarea class="input" cols="10" rows="1" value="2" id="InputGrassEnergy"></textarea></div>
     <div>Chance grass will regrow each tick if it <br> is surrounded by grass (%):<textarea class="input" cols="10" rows="1" value="2" id="InputGrassRegrow"></textarea></div>
+    <div>How many ticks the wolves can live for:<textarea class="input" cols="10" rows="1" value="2" id="InputWolfAge"></textarea></div>
+    <div>How many ticks the sheep can live for:<textarea class="input" cols="10" rows="1" value="2" id="InputSheepAge"></textarea></div>
+    <div>The speed of the wolf:<textarea class="input" cols="10" rows="1" value="2" id="InputWolfSpeed"></textarea></div>
     <div>Simulation speed:<textarea class="input" cols="10" rows="1" value="100" id="SimSpeed"></textarea></div>
     <div id="sheepPop"></div>
     <div id="wolfPop"></div>
+    <button id="save-button" onclick="SaveChanges()">Save changes</button>
+    <button id="load-button" onclick="LoadChanges()">Load changes</button>
     <button id="reset-button" onclick="ResetSim()">Reset</button>
     <script src="file.js"></script>
 </body>

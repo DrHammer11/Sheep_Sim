@@ -1,34 +1,76 @@
+function loadData() {
+    dataArray = JSON.parse(localStorage.getItem("SimChanges"));
+    return dataArray;
+}
+
+function UpdateData(newdata) {
+    localStorage.setItem("SimChanges", JSON.stringify(newdata));
+}
+
 class Grass {
     constructor() {
         this.energygiven = parseInt(document.getElementById("InputGrassEnergy").value);
         this.eaten = false;
         this.coords = ['x','y'];
+        this.illness = false;
+        if (Math.random() < 0.001) {
+            this.illness = true;
+        }
       }
       UpdateEaten(gr, gp) {
-          if (this.eaten === true) {
+        if (this.illness === true) {
+            GrassElements[gr][gp].style.backgroundColor = 'yellowgreen';
+        }
+        if (this.eaten === true) {
             GrassElements[gr][gp].style.backgroundColor = "saddlebrown";
-          }
+        }
       }
       UpdateGrow(gr, gp) {
         gr = parseInt(gr)
         gp = parseInt(gp)
         let ChanceOfRegrow = 0;
+        let ChanceOfIllness = 0;
         if (gp !== 0 && GrassGrid[gr][gp-1].eaten === false) {
             ChanceOfRegrow += parseInt(document.getElementById("InputGrassRegrow").value)/400;
+            if (GrassGrid[gr][gp-1].illness === true) {
+                ChanceOfIllness += 0.01;
+            }
         }
         if (gp !== 119 && GrassGrid[gr][gp+1].eaten === false) {
             ChanceOfRegrow += parseInt(document.getElementById("InputGrassRegrow").value)/400;
+            if (GrassGrid[gr][gp+1].illness === true) {
+                ChanceOfIllness += 0.01;
+            }
         }
         if (gr !== 0 && GrassGrid[gr-1][gp].eaten === false) {
             ChanceOfRegrow += parseInt(document.getElementById("InputGrassRegrow").value)/400;
+            if (GrassGrid[gr-1][gp].illness === true) {
+                ChanceOfIllness += 0.01;
+            }
         }
         if (gr !== 119 && GrassGrid[gr+1][gp].eaten === false) {
             ChanceOfRegrow += parseInt(document.getElementById("InputGrassRegrow").value)/400;
+            if (GrassGrid[gr+1][gp].illness === true) {
+                ChanceOfIllness += 0.01;
+            }
         }
         if (Math.random() <= ChanceOfRegrow) {
             this.eaten = false;
             GrassElements[gr][gp].style.backgroundColor = "green";
-          }
+        }
+        if (Math.random() <= ChanceOfIllness && this.eaten === false) {
+            if (this.illness === true && Math.random() <= 0.2) {
+                this.eaten = true;
+                this.illness = false;
+            }
+            else {
+                this.illness = true;
+            }
+        }
+        if (Math.random() <= 0.014-ChanceOfIllness) {
+            this.illness = false;
+            GrassElements[gr][gp].style.backgroundColor = "green";
+        }
       }
 }
 class Sheep {
@@ -39,7 +81,7 @@ class Sheep {
         this.element = document.createElement('div');
         this.element.setAttribute('id', this.id);
         this.element.setAttribute('class', 'sheepObj');
-        this.element.setAttribute('style', "position: absolute; left: 432px; top: 8px;");
+        this.element.setAttribute('style', "position: absolute; left: 0px; top: 0px;");
         document.getElementById("SheepContainer").appendChild(this.element);
         this.energy = 20;
         this.energygiven = this.energy;
@@ -82,8 +124,8 @@ class Sheep {
         else {
             this.y -= randomint(2, 5);
         }
-        if (this.x > 5*GrassAreaSize+350) {
-            this.x = 5*GrassAreaSize+350;
+        if (this.x > 5*GrassAreaSize+346) {
+            this.x = 5*GrassAreaSize+346;
         }
         if (this.y > 5*GrassAreaSize+4) {
             this.y = 5*GrassAreaSize-1;
@@ -137,7 +179,7 @@ class Sheep {
         }
         this.energy -= 1;
         this.energygiven -= 1;
-        if (this.age >= 250 || this.energy <= 0) {       
+        if (this.age >= parseInt(document.getElementById("InputSheepAge").value) || this.energy <= 0) {       
             removeElement(this.id);  
             var index = SheepIdArray.indexOf(this.id);
             if (index > -1) {
@@ -155,11 +197,12 @@ class Wolf {
         this.element = document.createElement('div');
         this.element.setAttribute('id', this.id);
         this.element.setAttribute('class', 'wolfObj');
-        this.element.setAttribute('style', "position: absolute; left: 432px; top: 8px;");
+        this.element.setAttribute('style', "position: absolute; left: 0px; top: 0px;");
         document.getElementById("WolfContainer").appendChild(this.element);
         this.energy = 70;
         this.age = 0;
-        this.speed = 6.2;
+        this.speed = parseInt(document.getElementById("InputWolfSpeed").value);
+        this.originalspeed = parseInt(document.getElementById("InputWolfSpeed").value);
         this.full = false;
         this.target = new Sheep();
         WolfCreated += 1;
@@ -193,12 +236,12 @@ class Wolf {
         }
         else {
             this.energy -= 1.05;
-            this.speed = 5.7;
+            this.speed = this.originalspeed - this.originalspeed*(0.5/6.2);
         }
         if (this.age > 235) {
-            this.speed = 5.2;
+            this.speed = this.originalspeed - this.originalspeed*(0.5/6.2);
         }
-        if (this.age >= 300 || this.energy <= 0) {    
+        if (this.age >= parseInt(document.getElementById("InputWolfAge").value) || this.energy <= 0) {    
             removeElement(this.id);  
             var index = WolfIdArray.indexOf(this.id);
             if (index > -1) {
@@ -228,12 +271,12 @@ function CheckForGrass(hsheep) {
         for (let gp in GrassGrid[gr]) {
             if (GrassGrid[gr][gp].eaten === false && setvaluex <= GrassGrid[gr][gp].coords[0]+5 && setvaluex >= GrassGrid[gr][gp].coords[0] && setvaluey <= GrassGrid[gr][gp].coords[1]+5 && setvaluey >= GrassGrid[gr][gp].coords[1]) {
                 GrassGrid[gr][gp].eaten = true;
+                GrassGrid[gr][gp].illness = false;
                 if (hsheep.colour === "pink") {
                     hsheep.energy += 0.1 * GrassGrid[gr][gp].energygiven;
                 }
                 hsheep.energy += GrassGrid[gr][gp].energygiven;
                 hsheep.energygiven += GrassGrid[gr][gp].energygiven;
-                GrassGrid[gr][gp].UpdateEaten(gr, gp)
             }
         }
     }
@@ -247,7 +290,7 @@ function GetDistance(wolf, sheep) {
 function CheckForSheep(hwolf) {
     for (let sheep in SheepArray) {
         sheep = SheepArray[sheep];
-        if (hwolf.x <= sheep.x+7.5 && hwolf.x >= sheep.x && hwolf.y <= sheep.y+7.5 && hwolf.y >= sheep.y) {
+        if (hwolf.x <= sheep.x+9 && hwolf.x >= sheep.x && hwolf.y <= sheep.y+9 && hwolf.y >= sheep.y) {
             if (sheep.fighter === false || ((sheep.fighter === true && Math.random < 0.12) || (sheep.fighter === true && sheep.energy < 15))) {
                 removeElement(sheep.id);  
                 var index = SheepIdArray.indexOf(sheep.id);
@@ -280,9 +323,11 @@ function pickNewSheep(wolf, npsheepid) {
 let GrassAreaSize = 120;
 SheepArray = new Array();
 SheepIdArray = new Array();
+SheepPopGraph = new Array();
 SheepCreated = 0;
 WolfArray = new Array();
 WolfIdArray = new Array();
+WolfPopGraph = new Array();
 WolfCreated = 0;
 let stop = false;
 SheepColours = ['white','gray','tan','lightpink','black']
@@ -294,6 +339,9 @@ document.getElementById("InputWolfNum").value = '2';
 document.getElementById("InputFightPerc").value = '3.4';
 document.getElementById("InputGrassEnergy").value = '3';
 document.getElementById("InputGrassRegrow").value = '2';
+document.getElementById("InputWolfAge").value = '300';
+document.getElementById("InputSheepAge").value = '250';
+document.getElementById("InputWolfSpeed").value = '6.2';
 let containerDiv = document.getElementById("sim");
 for (c=0; c < 2; c++) {
     for (let s=0; s < SheepColours.length; s++) {
@@ -331,9 +379,11 @@ function ResetSim() {
     stop = true;
     SheepArray = new Array();
     SheepIdArray = new Array();
+    SheepPopGraph = new Array();
     SheepCreated = 0;
     WolfArray = new Array();
     WolfIdArray = new Array();
+    WolfPopGraph = new Array();
     WolfCreated = 0;
     SheepColours = ['white','gray','tan','lightpink','black']
     GrassGrid = new Array(GrassAreaSize);
@@ -366,6 +416,12 @@ function ResetSim() {
         containerDiv.removeChild(containerDiv.firstChild);
     }
     GenSim();
+    ctx.clearRect(0, 0, c.width, c.height);
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx2.clearRect(0, 0, c2.width, c2.height);
+    ctx2.beginPath();
+    ctx2.moveTo(0, 0);
     stop = false;
 }
 GenSim();
@@ -380,9 +436,13 @@ function UpdateSim() {
         }
         for (let gr in GrassGrid) {
             for (let gp in GrassGrid[gr]) {
-                if (GrassGrid[gr][gp].eaten === true) {
-                    GrassGrid[gr][gp].UpdateGrow(gr, gp);
-                }
+                //if (GrassGrid[gr][gp].eaten === true) {
+                GrassGrid[gr][gp].UpdateGrow(gr, gp);
+                //}
+                GrassGrid[gr][gp].UpdateEaten(gr, gp);
+                //if (GrassGrid[gr][gp].eaten === true || GrassGrid[gr][gp].illness === true) {
+                //    GrassGrid[gr][gp].UpdateEaten(gr, gp);
+                //}
             }
         }
         let totalspp = '';
@@ -399,7 +459,77 @@ function UpdateSim() {
         }
         document.getElementById("sheepPop").innerHTML = totalspp;
         document.getElementById("wolfPop").innerHTML = "Wolf population: "+WolfArray.length.toString();
+        WolfPopGraph.push(WolfArray.length);
+        ctx.strokeStyle = "rgb(77, 85, 85)";
+        if ((WolfPopGraph.length-1)/2 > 300) {
+            ctx.clearRect(0, 0, c.width, c.height);
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            WolfPopGraph = [];
+        }
+        ctx.lineTo((WolfPopGraph.length-1)/2, c.height-WolfArray.length);
+        ctx.stroke();
+        SheepPopGraph.push(SheepArray.length);
+        ctx2.strokeStyle = "rgb(201, 129, 195)";
+        if ((SheepPopGraph.length-1)/2 > 300) {
+            ctx2.clearRect(0, 0, c2.width, c2.height);
+            ctx2.beginPath();
+            ctx2.moveTo(0, 0);
+            SheepPopGraph = [];
+        }
+        ctx2.lineTo((SheepPopGraph.length-1)/2, c2.height-SheepArray.length);
+        ctx2.stroke();
         setTimeout(UpdateSim, 200-parseInt(document.getElementById("SimSpeed").value));
     }
 }
+function SaveChanges() {
+   UpdateData([document.getElementById('SimSpeed').value,
+   document.getElementById("InputSheepNum").value,
+   document.getElementById("InputWolfNum").value,
+   document.getElementById("InputFightPerc").value,
+   document.getElementById("InputGrassEnergy").value,
+   document.getElementById("InputGrassRegrow").value,
+   document.getElementById("InputWolfAge").value,
+   document.getElementById("InputSheepAge").value,
+   document.getElementById("InputWolfSpeed").value])
+}
+function LoadChanges() {
+    sca = loadData();
+    document.getElementById('SimSpeed').value = sca[0];
+    document.getElementById("InputSheepNum").value = sca[1];
+    document.getElementById("InputWolfNum").value = sca[2];
+    document.getElementById("InputFightPerc").value = sca[3];
+    document.getElementById("InputGrassEnergy").value = sca[4];
+    document.getElementById("InputGrassRegrow").value = sca[5];
+    document.getElementById("InputWolfAge").value = sca[6];
+    document.getElementById("InputSheepAge").value = sca[7];
+    document.getElementById("InputWolfSpeed").value = sca[8];   
+ }
+//  function ViewGraph() {
+//     var c = document.getElementById("myCanvas");
+//     var ctx = c.getContext("2d");
+//     ctx.clearRect(0, 0, c.width, c.height);
+//     ctx.beginPath();
+//     ctx.moveTo(0, 0);
+//     ctx.strokeStyle = "rgb(77, 85, 85)";
+//     for (let wp in WolfPopGraph) {
+//         ctx.lineTo(wp/2, c.height-WolfPopGraph[wp]);
+//         ctx.stroke();
+//     }
+//     ctx.beginPath();
+//     ctx.moveTo(0, 0);
+//     ctx.strokeStyle = "rgb(201, 129, 195)";
+//     for (let sp in SheepPopGraph) {
+//         ctx.lineTo(sp/2, c.height-SheepPopGraph[sp]);
+//         ctx.stroke();
+//     }
+// }
+var c = document.getElementById("myCanvas");
+var ctx = c.getContext("2d");
+ctx.beginPath();
+ctx.moveTo(0, 0);
+var c2 = document.getElementById("myCanvas2");
+var ctx2 = c2.getContext("2d");
+ctx2.beginPath();
+ctx2.moveTo(0, 0);
 setTimeout(UpdateSim, 200-parseInt(document.getElementById("SimSpeed").value));
