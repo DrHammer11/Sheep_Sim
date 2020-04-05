@@ -12,15 +12,15 @@ class Grass {
         this.energygiven = parseInt(document.getElementById("InputGrassEnergy").value);
         this.eaten = false;
         this.coords = ['x','y'];
-        this.illness = false;
-        if (Math.random() < 0.001) {
-            this.illness = true;
-        }
+        // this.illness = false;
+        // if (Math.random() < 0.001) {
+        //     this.illness = true;
+        // }
       }
       UpdateEaten(gr, gp) {
-        if (this.illness === true) {
-            GrassElements[gr][gp].style.backgroundColor = 'yellowgreen';
-        }
+        // if (this.illness === true) {
+        //     GrassElements[gr][gp].style.backgroundColor = 'yellowgreen';
+        // }
         if (this.eaten === true) {
             GrassElements[gr][gp].style.backgroundColor = "saddlebrown";
         }
@@ -29,48 +29,48 @@ class Grass {
         gr = parseInt(gr)
         gp = parseInt(gp)
         let ChanceOfRegrow = 0;
-        let ChanceOfIllness = 0;
+        //let ChanceOfIllness = 0;
         if (gp !== 0 && GrassGrid[gr][gp-1].eaten === false) {
             ChanceOfRegrow += parseInt(document.getElementById("InputGrassRegrow").value)/400;
-            if (GrassGrid[gr][gp-1].illness === true) {
-                ChanceOfIllness += 0.01;
-            }
+            // if (GrassGrid[gr][gp-1].illness === true) {
+            //     ChanceOfIllness += 0.01;
+            // }
         }
         if (gp !== 119 && GrassGrid[gr][gp+1].eaten === false) {
             ChanceOfRegrow += parseInt(document.getElementById("InputGrassRegrow").value)/400;
-            if (GrassGrid[gr][gp+1].illness === true) {
-                ChanceOfIllness += 0.01;
-            }
+            // if (GrassGrid[gr][gp+1].illness === true) {
+            //     ChanceOfIllness += 0.01;
+            // }
         }
         if (gr !== 0 && GrassGrid[gr-1][gp].eaten === false) {
             ChanceOfRegrow += parseInt(document.getElementById("InputGrassRegrow").value)/400;
-            if (GrassGrid[gr-1][gp].illness === true) {
-                ChanceOfIllness += 0.01;
-            }
+            // if (GrassGrid[gr-1][gp].illness === true) {
+            //     ChanceOfIllness += 0.01;
+            // }
         }
         if (gr !== 119 && GrassGrid[gr+1][gp].eaten === false) {
             ChanceOfRegrow += parseInt(document.getElementById("InputGrassRegrow").value)/400;
-            if (GrassGrid[gr+1][gp].illness === true) {
-                ChanceOfIllness += 0.01;
-            }
+            // if (GrassGrid[gr+1][gp].illness === true) {
+            //     ChanceOfIllness += 0.01;
+            // }
         }
         if (Math.random() <= ChanceOfRegrow) {
             this.eaten = false;
             GrassElements[gr][gp].style.backgroundColor = "green";
         }
-        if (Math.random() <= ChanceOfIllness && this.eaten === false) {
-            if (this.illness === true && Math.random() <= 0.2) {
-                this.eaten = true;
-                this.illness = false;
-            }
-            else {
-                this.illness = true;
-            }
-        }
-        if (Math.random() <= 0.014-ChanceOfIllness) {
-            this.illness = false;
-            GrassElements[gr][gp].style.backgroundColor = "green";
-        }
+        // if (Math.random() <= ChanceOfIllness && this.eaten === false) {
+        //     if (this.illness === true && Math.random() <= 0.2) {
+        //         this.eaten = true;
+        //         this.illness = false;
+        //     }
+        //     else {
+        //         this.illness = true;
+        //     }
+        // }
+        // if (Math.random() <= 0.014-ChanceOfIllness) {
+        //     this.illness = false;
+        //     GrassElements[gr][gp].style.backgroundColor = "green";
+        // }
       }
 }
 class Sheep {
@@ -271,7 +271,7 @@ function CheckForGrass(hsheep) {
         for (let gp in GrassGrid[gr]) {
             if (GrassGrid[gr][gp].eaten === false && setvaluex <= GrassGrid[gr][gp].coords[0]+5 && setvaluex >= GrassGrid[gr][gp].coords[0] && setvaluey <= GrassGrid[gr][gp].coords[1]+5 && setvaluey >= GrassGrid[gr][gp].coords[1]) {
                 GrassGrid[gr][gp].eaten = true;
-                GrassGrid[gr][gp].illness = false;
+                //GrassGrid[gr][gp].illness = false;
                 if (hsheep.colour === "pink") {
                     hsheep.energy += 0.1 * GrassGrid[gr][gp].energygiven;
                 }
